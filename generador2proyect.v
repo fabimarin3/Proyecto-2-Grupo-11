@@ -26,7 +26,9 @@ module proyecto1(
     output reg [2:0] rgbtext,
     output wire hsync, vsync,
     output video_on,
-    output wire [9:0] pixel_x, pixel_y
+    output wire [9:0] pixel_x, pixel_y,
+    output wire [9:0] pixel_xm, pixel_ym
+  
     //output [8:0] nousar
     );
     
@@ -142,8 +144,10 @@ module proyecto1(
     
     //salidas
     
-    assign pixel_x = hcount;
+    assign pixel_x = hcount ;
+    assign pixel_xm = hcount;
     assign pixel_y = vcount;
+    assign pixel_ym = vcount;
     assign hsync = ~h_sync;
     assign vsync = ~v_sync;
     assign clk_25m = clk_d;
@@ -159,8 +163,14 @@ module proyecto1(
 wire [3:1] lsbx;
 wire [4:1] lsby;
 
+wire [2:0] lsbxm;
+wire [3:0] lsbym;
+
 assign lsbx = ~pixel_x[3:1] ;
 assign lsby = pixel_y[4:1];
+
+assign lsbxm = ~pixel_xm [2:0] ;
+assign lsbym = pixel_ym [3:0];
         
 reg [2:0] letter_rgb;
 
@@ -187,139 +197,124 @@ localparam yt = 192;
 localparam yb = 223;
 
 //fecha
-localparam f_xl = 320;
-localparam f_xr = 335;
-localparam e_xl = 336;
-localparam e_xr = 351;
-localparam c_xl = 352;
-localparam c_xr = 367;
-localparam h_xl = 368;
-localparam h_xr = 383;
-localparam a_xl = 384;
-localparam a_xr = 399;
-
-
+localparam f_xl = 368;
+localparam f_xr = 383;
+localparam e_xl = 384;
+localparam e_xr = 399;
+localparam c_xl = 400;
+localparam c_xr = 415;
+localparam h_xl = 416;
+localparam h_xr = 431;
+localparam a_xl = 432;
+localparam a_xr = 447;
 
 //timer
-localparam txl = 240;
-localparam txr = 255;
-localparam ixl = 256;
-localparam ixr = 271;
-localparam mxl =272;
-localparam mxr =  287;
-localparam exl = 288;
-localparam exr = 303;
-localparam r_xl = 304 ;
-localparam r_xr =  319;
+localparam txl = 272;
+localparam txr = 287;
+localparam ixl = 288;
+localparam ixr = 303;
+localparam mxl = 304;
+localparam mxr =  319;
+localparam exl = 320;
+localparam exr = 335;
+localparam r_xl = 336 ;
+localparam r_xr = 351;
 
 localparam y_t = 352; 
 localparam y_b = 383;
 
-// letter output signals
-wire hon, oon, ron, aon, f_on, e_on, c_on, h_on, a_on, ton,ion,mon, eon, r_on;
+//lineas cuadro hora
+localparam lvhi = 187 ;
+localparam lvhf = 260;
+localparam lhhi = 190;
+localparam lhhf = 225;
 
+//lineas cuadro fecha
+localparam lvfi = 363; 
+localparam lvff= 452;
+localparam lhfi= 190;
+localparam lhff= 225;
+
+//lineas cuadro timer
+localparam lvti= 267;
+localparam lvtf= 356;
+localparam lhti= 350;
+localparam lhtf= 385;
+
+//AM/PM localparam aci = 272; localparam acf = 279;localparam mci = 280;localparam mcf = 387;localparam pci = 304;localparam pcf = 319;
+//localparam mc_i = 220;localparam mc_f = 235;localparam cayt = 192;localparam cayb = 207;
+
+// letter output signals
+wire hon, oon, ron, aon, f_on, e_on, c_on, h_on, a_on, ton,ion,mon, eon, r_on, chon, cfon, cton ; //, camon;
 
 // CUERPO
 
 // pixel within letters 
 
+//am
+//assign camon= (aci<=pixel_xm)&&(pixel_xm<=acf) && (cayt<=pixel_ym)&&(pixel_ym<=cayb);
+
+//cuadro hora
+assign chon= (lvhi<=pixel_x)&&(pixel_x<=lvhf) && (lhhi<=pixel_y)&&(pixel_y<=lhhf);
+
+//cuadro fecha
+assign cfon= (lvfi<=pixel_x)&&(pixel_x<=lvff) &&(lhfi<=pixel_y)&&(pixel_y<=lhff);
+
+//cuadro timer
+assign cton= (lvti<=pixel_x)&&(pixel_x<=lvtf) &&(lhti<=pixel_y)&&(pixel_y<=lhtf);
+
 //hora
-assign hon =
-((hxl<=pixel_x) && (pixel_x<=hxr) &&
-(yt<=pixel_y) && (pixel_y<=yb));
-
-assign oon =
-((oxl<=pixel_x) && (pixel_x<=oxr) &&
-(yt<=pixel_y) && (pixel_y<=yb));
-
-assign ron =
-((rxl<=pixel_x) && (pixel_x<=rxr) &&
-(yt<=pixel_y) && (pixel_y<=yb));
-
-assign aon =
-((axl<=pixel_x) && (pixel_x<=axr) &&
-(yt<=pixel_y) && (pixel_y<=yb));
+assign hon =(hxl<=pixel_x) && (pixel_x<=hxr) &&(yt<=pixel_y) && (pixel_y<=yb);
+assign oon =(oxl<=pixel_x) && (pixel_x<=oxr) &&(yt<=pixel_y) && (pixel_y<=yb);
+assign ron = (rxl<=pixel_x) && (pixel_x<=rxr) &&(yt<=pixel_y) && (pixel_y<=yb);
+assign aon =(axl<=pixel_x) && (pixel_x<=axr) && (yt<=pixel_y) && (pixel_y<=yb);
 
 //fecha
-assign f_on =
-(f_xl<=pixel_x) && (pixel_x<=f_xr) &&
-(yt<=pixel_y) && (pixel_y<=yb);
-
-assign e_on =
-((e_xl<=pixel_x) && (pixel_x<=e_xr) &&
-(yt<=pixel_y) && (pixel_y<=yb));
-
-assign c_on =
-(c_xl<=pixel_x) && (pixel_x<=c_xr) &&
-(yt<=pixel_y) && (pixel_y<=yb);
-
-assign h_on= 
-((h_xl<=pixel_x) && (pixel_x<=h_xr) &&
-(yt<=pixel_y) && (pixel_y<=yb));
-
-assign a_on =
-( (a_xl<=pixel_x) && (pixel_x<=a_xr) &&
-(yt<=pixel_y) && (pixel_y<=yb) );
+assign f_on =(f_xl<=pixel_x) && (pixel_x<=f_xr) &&(yt<=pixel_y) && (pixel_y<=yb);
+assign e_on =(e_xl<=pixel_x) && (pixel_x<=e_xr) &&(yt<=pixel_y) && (pixel_y<=yb);
+assign c_on =(c_xl<=pixel_x) && (pixel_x<=c_xr) &&(yt<=pixel_y) && (pixel_y<=yb);
+assign h_on= (h_xl<=pixel_x) && (pixel_x<=h_xr) &&(yt<=pixel_y) && (pixel_y<=yb);
+assign a_on =(a_xl<=pixel_x) && (pixel_x<=a_xr) &&(yt<=pixel_y) && (pixel_y<=yb);
 
 //timer
 
-assign ton =
-(txl<=pixel_x) && (pixel_x<=txr) &&
-(y_t<=pixel_y) && (pixel_y<=y_b);
-
-assign ion =
-((ixl<=pixel_x) && (pixel_x<=ixr) &&
-(y_t<=pixel_y) && (pixel_y<=y_b));
-
-assign mon =
-((mxl<=pixel_x) && (pixel_x<=mxr) &&
-(y_t<=pixel_y) && (pixel_y<=y_b));
-
-assign eon = 
-((exl<=pixel_x) && (pixel_x<=exr) &&
-(y_t<=pixel_y) && (pixel_y<=y_b));
-
-assign r_on =
-((r_xl<=pixel_x) && (pixel_x<=r_xr) &&
-(y_t<=pixel_y) && (pixel_y<=y_b));
+assign ton =(txl<=pixel_x) && (pixel_x<=txr) &&(y_t<=pixel_y) && (pixel_y<=y_b);
+assign ion =(ixl<=pixel_x) && (pixel_x<=ixr) &&(y_t<=pixel_y) && (pixel_y<=y_b);
+assign mon =(mxl<=pixel_x) && (pixel_x<=mxr) &&(y_t<=pixel_y) && (pixel_y<=y_b);
+assign eon = (exl<=pixel_x) && (pixel_x<=exr) &&(y_t<=pixel_y) && (pixel_y<=y_b);
+assign r_on =(r_xl<=pixel_x) && (pixel_x<=r_xr) &&(y_t<=pixel_y) && (pixel_y<=y_b);
 
 
 
 always @* 
    begin
         //hora
-    if (hon)
+    if (hon|h_on)
         as <= 4'b0001; 
     else if (oon)
         as <= 4'b0010;
-    else if (ron)
+    else if (ron|r_on)
         as <= 4'b0011;
-    else if (aon)
+    else if (aon|a_on) //|camon
         as <= 4'b0100; //se agrega 
         
         //fecha
     else if (f_on)
          as <= 4'b0101; //se agrega 
-    else if (e_on)
+    else if (e_on|eon)
          as <= 4'b0110; //se agrega 
     else if (c_on)
          as <= 4'b0111; //se agrega 
-    else if (h_on)
-         as <= 4'b1000; //se agrega
-    else if (a_on)
-         as <= 4'b1001; //se agrega
+ 
          
          //timer
     else if (ton)
-         as <= 4'b1010; //se agrega 
+         as <= 4'b1000; //se agrega 
     else if (ion)
-         as <= 4'b1011; //se agrega 
-    else if (mon)
-         as <= 4'b1100; //se agrega 
-    else if (eon)
-         as <= 4'b1101; //se agrega
-    else if (r_on)
-         as <= 4'b1110; //se agrega
+         as <= 4'b1001; //se agrega 
+    else if (mon) //|camon
+         as <= 4'b1010; //se agrega 
+  
          
     else
         as <= 4'b0000;   
@@ -351,8 +346,10 @@ always @*
 always @*
     if (~video_on)
         rgbtext = 3'b000; // blank 
-    else if (hon|oon|ron|aon|f_on|e_on|c_on|h_on|a_on|ton|ion|mon|eon|r_on)  
+    else if (hon|oon|ron|aon|f_on|e_on|c_on|h_on|a_on|ton|ion|mon|eon|r_on) //|camon  
         rgbtext = letter_rgb; 
+    else if (chon|cfon|cton)
+        rgbtext = 3'b111;
     else
         rgbtext = 3'b000; // black background
 endmodule
@@ -514,131 +511,63 @@ always @*
     8'h07e: data = 8'b01111110; 
     8'h07f: data = 8'b00000000; 
 
-    //code letter H
-    8'h080: data = 8'b00000000; 
-    8'h081: data = 8'b01100110;
-    8'h082: data = 8'b01100110; 
-    8'h083: data = 8'b01100110; 
-    8'h084: data = 8'b01100110; 
-    8'h085: data = 8'b01100110; 
-    8'h086: data = 8'b01100110; 
-    8'h087: data = 8'b01111110; 
-    8'h088: data = 8'b01111110; 
-    8'h089: data = 8'b01100110; 
-    8'h08a: data = 8'b01100110; 
-    8'h08b: data = 8'b01100110; 
-    8'h08c: data = 8'b01100110; 
-    8'h08d: data = 8'b01100110; 
-    8'h08e: data = 8'b01100110; 
-    8'h08f: data = 8'b00000000; 
-
-   //code letter A
-    8'h090: data = 8'b00000000; 
-    8'h091: data = 8'b00011000; 
-    8'h092: data = 8'b00011000; 
-    8'h093: data = 8'b00111100; 
-    8'h094: data = 8'b00111100; 
-    8'h095: data = 8'b01100110;
-    8'h096: data = 8'b01100110; 
-    8'h097: data = 8'b01111110; 
-    8'h098: data = 8'b01111110; 
-    8'h099: data = 8'b01100110; 
-    8'h09a: data = 8'b01100110; 
-    8'h09b: data = 8'b01100110; 
-    8'h09c: data = 8'b01100110; 
-    8'h09d: data = 8'b01100110; 
-    8'h09e: data = 8'b01100110; 
-    8'h09f: data = 8'b00000000; 
+ 
 
     //code letter T
-    8'h0a0: data = 8'b00000000; 
-    8'h0a1: data = 8'b01111110;
-    8'h0a2: data = 8'b01111110; 
-    8'h0a3: data = 8'b01111110; 
-    8'h0a4: data = 8'b00011000; 
-    8'h0a5: data = 8'b00011000; 
-    8'h0a6: data = 8'b00011000; 
-    8'h0a7: data = 8'b00011000; 
-    8'h0a8: data = 8'b00011000; 
-    8'h0a9: data = 8'b00011000; 
-    8'h0aa: data = 8'b00011000; 
-    8'h0ab: data = 8'b00011000; 
-    8'h0ac: data = 8'b00011000; 
-    8'h0ad: data = 8'b00011000; 
-    8'h0ae: data = 8'b00011000; 
-    8'h0af: data = 8'b00000000; 
+    8'h080: data = 8'b00000000; 
+    8'h081: data = 8'b01111110;
+    8'h082: data = 8'b01111110; 
+    8'h083: data = 8'b01111110; 
+    8'h084: data = 8'b00011000; 
+    8'h085: data = 8'b00011000; 
+    8'h086: data = 8'b00011000; 
+    8'h087: data = 8'b00011000; 
+    8'h088: data = 8'b00011000; 
+    8'h089: data = 8'b00011000; 
+    8'h08a: data = 8'b00011000; 
+    8'h08b: data = 8'b00011000; 
+    8'h08c: data = 8'b00011000; 
+    8'h08d: data = 8'b00011000; 
+    8'h08e: data = 8'b00011000; 
+    8'h08f: data = 8'b00000000; 
 
   //code letter I
-    8'h0b0: data = 8'b00000000; 
-    8'h0b1: data = 8'b00011000;
-    8'h0b2: data = 8'b00011000; 
-    8'h0b3: data = 8'b00011000; 
-    8'h0b4: data = 8'b00011000; 
-    8'h0b5: data = 8'b00011000; 
-    8'h0b6: data = 8'b00011000; 
-    8'h0b7: data = 8'b00011000; 
-    8'h0b8: data = 8'b00011000; 
-    8'h0b9: data = 8'b00011000; 
-    8'h0ba: data = 8'b00011000; 
-    8'h0bb: data = 8'b00011000; 
-    8'h0bc: data = 8'b00011000; 
-    8'h0bd: data = 8'b00011000; 
-    8'h0be: data = 8'b00011000; 
-    8'h0bf: data = 8'b00000000; 
+    8'h090: data = 8'b00000000; 
+    8'h091: data = 8'b00011000;
+    8'h092: data = 8'b00011000; 
+    8'h093: data = 8'b00011000; 
+    8'h094: data = 8'b00011000; 
+    8'h095: data = 8'b00011000; 
+    8'h096: data = 8'b00011000; 
+    8'h097: data = 8'b00011000; 
+    8'h098: data = 8'b00011000; 
+    8'h099: data = 8'b00011000; 
+    8'h09a: data = 8'b00011000; 
+    8'h09b: data = 8'b00011000; 
+    8'h09c: data = 8'b00011000; 
+    8'h09d: data = 8'b00011000; 
+    8'h09e: data = 8'b00011000; 
+    8'h09f: data = 8'b00000000; 
     
     //code letter M
-    8'h0c0: data = 8'b00000000; 
-    8'h0c1: data = 8'b01100110;
-    8'h0c2: data = 8'b01100110; 
-    8'h0c3: data = 8'b01100110; 
-    8'h0c4: data = 8'b01011010; 
-    8'h0c5: data = 8'b01011010; 
-    8'h0c6: data = 8'b01000010; 
-    8'h0c7: data = 8'b01000010; 
-    8'h0c8: data = 8'b01000010; 
-    8'h0c9: data = 8'b01000010; 
-    8'h0ca: data = 8'b01000010; 
-    8'h0cb: data = 8'b01000010; 
-    8'h0cc: data = 8'b01000010; 
-    8'h0cd: data = 8'b01000010; 
-    8'h0ce: data = 8'b01000010; 
-    8'h0cf: data = 8'b00000000;
+    8'h0a0: data = 8'b00000000; 
+    8'h0a1: data = 8'b01100110;
+    8'h0a2: data = 8'b01100110; 
+    8'h0a3: data = 8'b01100110; 
+    8'h0a4: data = 8'b01011010; 
+    8'h0a5: data = 8'b01011010; 
+    8'h0a6: data = 8'b01000010; 
+    8'h0a7: data = 8'b01000010; 
+    8'h0a8: data = 8'b01000010; 
+    8'h0a9: data = 8'b01000010; 
+    8'h0aa: data = 8'b01000010; 
+    8'h0ab: data = 8'b01000010; 
+    8'h0ac: data = 8'b01000010; 
+    8'h0ad: data = 8'b01000010; 
+    8'h0ae: data = 8'b01000010; 
+    8'h0af: data = 8'b00000000;
 
- //code letter E
-    8'h0d0: data = 8'b00000000; //11111111
-    8'h0d1: data = 8'b01111110; //11111111
-    8'h0d2: data = 8'b01111110; //11100000
-    8'h0d3: data = 8'b01100000; //11100000
-    8'h0d4: data = 8'b01100000; //11100000
-    8'h0d5: data = 8'b01100000; //11100000
-    8'h0d6: data = 8'b01100000; //11100000
-    8'h0d7: data = 8'b01111110; //11111111
-    8'h0d8: data = 8'b01100000; //11100000
-    8'h0d9: data = 8'b01100000; //11100000
-    8'h0da: data = 8'b01100000; //11100000
-    8'h0db: data = 8'b01100000; //11100000
-    8'h0dc: data = 8'b01100000; //11100000
-    8'h0dd: data = 8'b01111110; //11111111
-    8'h0de: data = 8'b01111110; //11111111
-    8'h0df: data = 8'b00000000; //11111111
-    
-    //code letter R
-    8'h0e0: data = 8'b00000000; 
-    8'h0e1: data = 8'b01111100; 
-    8'h0e2: data = 8'b01100110; 
-    8'h0e3: data = 8'b01100110; 
-    8'h0e4: data = 8'b01100110; 
-    8'h0e5: data = 8'b01100110; 
-    8'h0e6: data = 8'b01100110; 
-    8'h0e7: data = 8'b01111100; 
-    8'h0e8: data = 8'b01111100; 
-    8'h0e9: data = 8'b01100110; 
-    8'h0ea: data = 8'b01100110; 
-    8'h0eb: data = 8'b01100110; 
-    8'h0ec: data = 8'b01100110; 
-    8'h0ed: data = 8'b01100110; 
-    8'h0ee: data = 8'b01100110; 
-    8'h0ef: data = 8'b00000000;       
+     
     
 
     default : data = 8'b00000000;
