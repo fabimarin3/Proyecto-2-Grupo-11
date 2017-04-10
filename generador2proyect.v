@@ -175,7 +175,7 @@ assign lsbym = pixel_ym [3:0];
 reg [2:0] letter_rgb;
 
 wire [7:0] Data;
-reg [3:0] as; //cambio :de 2 bits a 4 bits
+reg [4:0] as; //cambio :de 2 bits a 4 bits
 
 // x , y coordinates (0.0) to (639,479)
 localparam maxx = 640;
@@ -197,6 +197,11 @@ localparam gphfx = 271;
 localparam gphiy = 32;
 localparam gphfy = 63;
 
+//numero 1
+localparam uxi = 272;
+localparam uxf = 287;
+localparam uyi = 32;
+localparam uyf = 63;
 
 
 //PF
@@ -212,6 +217,12 @@ localparam gpffx = 271;
 localparam gpfiy = 64;
 localparam gpffy = 95;
 
+//numero dos
+localparam dxi = 272; 
+localparam dxf = 287;
+localparam dyi = 64;
+localparam dyf = 95;
+
 
 //PT
 localparam pti = 224;
@@ -225,6 +236,12 @@ localparam gptix = 256;
 localparam gptfx = 271;
 localparam gptiy = 96;
 localparam gptfy = 127;
+
+//numero tres
+localparam txi = 272;
+localparam txf = 287;
+localparam tyi = 96;
+localparam tyf = 127;
 
 //guiones fecha
 localparam g1xi = 380;
@@ -327,11 +344,17 @@ localparam cayt = 288;localparam cayb = 319;
 
 // letter output signals
 wire hon, oon, ron, aon, f_on, e_on, c_on, h_on, a_on, ton,ion,mon, eon, r_on, 
-chon, cfon, cton , caon, cmon,cpon, cm_on, gph,gpf, gpt, g1fon, g2fon, dph1, dph2, dpt1, dpt2;
+phon,p_hon,pton, pfon,p_fon, p_ton, chon, cfon, cton , caon, cmon,cpon, cm_on, 
+gph,gpf, gpt, g1fon, g2fon, dph1, dph2, dpt1, dpt2,uno, dos, tres;
 
 // CUERPO
 
-// pixel within letters and signs
+// pixel within letters & signs & numbers
+
+//numeros
+assign uno = (uxi<=pixel_x)&&(pixel_x<=uxf) && (uyi<=pixel_y)&&(pixel_y<=uyf) ;
+assign dos = (dxi<=pixel_x)&&(pixel_x<=dxf) && (dyi<=pixel_y)&&(pixel_y<=dyf) ;
+assign tres = (txi<=pixel_x)&&(pixel_x<=txf) && (tyi<=pixel_y)&&(pixel_y<=tyf) ;
 
 //guiones fecha
 assign g1fon = (g1xi<=pixel_xm)&&(pixel_xm<=g1xf) && (g1yi<=pixel_ym)&&(pixel_ym<=g1yf) ;
@@ -403,45 +426,53 @@ always @*
    begin
         //hora
     if (hon|h_on|p_hon)
-        as <= 4'b0001; 
+         as <= 5'b00001; 
     else if (oon)
-        as <= 4'b0010;
+         as <= 5'b00010;
     else if (ron|r_on)
-        as <= 4'b0011;
+         as <= 5'b00011;
     else if (aon|a_on|caon)
-        as <= 4'b0100; //se agrega 
+         as <= 5'b00100; //se agrega 
         
         //fecha
     else if (f_on|p_fon)
-         as <= 4'b0101; //se agrega 
+         as <= 5'b00101; //se agrega 
     else if (e_on|eon)
-         as <= 4'b0110; //se agrega 
+         as <= 5'b00110; //se agrega 
     else if (c_on)
-         as <= 4'b0111; //se agrega 
+         as <= 5'b00111; //se agrega 
  
          
          //timer
     else if (ton|p_ton)
-         as <= 4'b1000; //se agrega 
+         as <= 5'b01000; //se agrega 
     else if (ion)
-         as <= 4'b1001; //se agrega 
+         as <= 5'b01001; //se agrega 
     else if (mon|cmon|cm_on)
-         as <= 4'b1010; //se agrega 
+         as <= 5'b01010; //se agrega 
     else if (cpon|phon|pfon|pton)
-         as <= 4'b1011; //se agrega //letraP
+         as <= 5'b01011; //se agrega //letraP
               
          //signos
     else if (gph|gpf|gpt)
-         as <= 4'b1100;
+         as <= 5'b01100;
     else if (dph1|dph2|dpt1|dpt2)
-         as <= 4'b1101;
+         as <= 5'b01101;
     else if (g1fon|g2fon)
-         as <= 4'b1110;
+         as <= 5'b01110;
+         
+         //numeros
+    else if (uno)
+         as <= 5'h0f;
+    else if (dos)
+         as <= 5'h10;
+    else if (tres)
+         as <= 5'h11;
          
   
          
     else
-        as <= 4'b0000;   
+        as <= 5'b00000;   
    end
  
 ROM FONT(as,lsby,Data);//|lsbym
@@ -470,8 +501,8 @@ always @*
 always @*
     if (~video_on)
         rgbtext = 3'b000; // blank 
-    else if (hon|oon|ron|aon|f_on|e_on|c_on|h_on|a_on|ton|ion|mon|eon|r_on|caon|cmon|cpon|cm_on|phon|pfon|pton|p_hon|p_fon|p_ton
-    |gph|gpf|gpt|g1fon|g2fon|dph1|dph2|dpt1|dpt2)  
+    else if (hon|oon|ron|aon|f_on|e_on|c_on|h_on|a_on|ton|ion|mon|eon|r_on|caon|cmon|cpon|
+    cm_on|phon|pfon|pton|p_hon|p_fon|p_ton|gph|gpf|gpt|g1fon|g2fon|dph1|dph2|dpt1|dpt2|uno|dos|tres)  
         rgbtext = letter_rgb; 
     else if (chon|cfon|cton)
         rgbtext = 3'b111;
@@ -480,7 +511,7 @@ always @*
 endmodule
 
 module ROM (
-input wire [3:0]as,
+input wire [4:0]as,
 input wire [4:1]lsby,
 //input wire [3:0]lsbym,
 output reg [7:0]data 
@@ -730,8 +761,8 @@ always @*
     11'h0cf: data = 8'b00000000; 
     
     //code sig :
-    11'h0d0: data = 8'h00000000; 
-    11'h0d1: data = 8'h00000000; 
+    11'h0d0: data = 8'b00000000; 
+    11'h0d1: data = 8'b00000000; 
     11'h0d2: data = 8'b00011000; 
     11'h0d3: data = 8'b00011000; 
     11'h0d4: data = 8'b00011000; 
@@ -748,8 +779,8 @@ always @*
     11'h0df: data = 8'b00000000; 
     
     //code sig -
-    11'h0e0: data = 8'b0000000000;
-    11'h0e1: data = 8'h04a2cb71;
+    11'h0e0: data = 8'b00000000;
+    11'h0e1: data = 8'b00000000;
     11'h0e2: data = 8'b00000000; 
     11'h0e3: data = 8'b00000000; 
     11'h0e4: data = 8'b00000000; 
@@ -765,9 +796,61 @@ always @*
     11'h0ee: data = 8'b00000000; 
     11'h0ef: data = 8'b00000000; 
 
-     
+    //code sig 1
+    11'h0f0: data = 8'b00000000;
+    11'h0f1: data = 8'b00011000;
+    11'h0f2: data = 8'b00111000; 
+    11'h0f3: data = 8'b00111000; 
+    11'h0f4: data = 8'b00011000; 
+    11'h0f5: data = 8'b00011000; 
+    11'h0f6: data = 8'b00011000; 
+    11'h0f7: data = 8'b00011000; 
+    11'h0f8: data = 8'b00011000; 
+    11'h0f9: data = 8'b00011000; 
+    11'h0fa: data = 8'b00011000; 
+    11'h0fb: data = 8'b00011000; 
+    11'h0fc: data = 8'b00011000; 
+    11'h0fd: data = 8'b01111110; 
+    11'h0fe: data = 8'b01111110; 
+    11'h0ff: data = 8'b00000000; 
     
+    //code sig 2
+    11'h100: data = 8'b00000000;
+    11'h101: data = 8'b01111110;
+    11'h102: data = 8'b01111110; 
+    11'h103: data = 8'b01111110; 
+    11'h104: data = 8'b00001110; 
+    11'h105: data = 8'b00001110; 
+    11'h106: data = 8'b00001110; 
+    11'h107: data = 8'b01111110; 
+    11'h108: data = 8'b01111110; 
+    11'h109: data = 8'b01110000; 
+    11'h10a: data = 8'b01110000; 
+    11'h10b: data = 8'b01110000; 
+    11'h10c: data = 8'b01111110; 
+    11'h10d: data = 8'b01111110; 
+    11'h10e: data = 8'b01111110; 
+    11'h10f: data = 8'b00000000; 
 
+    //code sig 3
+    11'h110: data = 8'b00000000;
+    11'h111: data = 8'b01111110;
+    11'h112: data = 8'b01111110; 
+    11'h113: data = 8'b01111110; 
+    11'h114: data = 8'b00001110; 
+    11'h115: data = 8'b00001110; 
+    11'h116: data = 8'b00001110; 
+    11'h117: data = 8'b01111110; 
+    11'h118: data = 8'b01111110; 
+    11'h119: data = 8'b00001110; 
+    11'h11a: data = 8'b00001110; 
+    11'h11b: data = 8'b00001110; 
+    11'h11c: data = 8'b01111110; 
+    11'h11d: data = 8'b01111110; 
+    11'h11e: data = 8'b01111110; 
+    11'h11f: data = 8'b00000000; 
+
+    
     default : data = 8'b00000000;
 endcase
 
