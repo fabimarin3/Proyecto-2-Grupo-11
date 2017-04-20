@@ -22,21 +22,23 @@
 
 module proyecto1(
     input reset, clk,
-    //input wire [2:0] rgbswitches,
+   // input wire [2:0] rgbswitches,
     output reg [2:0] rgbtext,
     output wire hsync, vsync
 
     //output video_on,
     //output wire [9:0] pixel_x, pixel_y,
      //output wire [9:0] pixel_xm, pixel_ym,
-    // input wire [7:0] dia,mes,ano,horar,minr,segr,horat,mint,segt
+     //input wire [7:0] dia,mes,ano,horar,minr,segr,horat,mint,segt
   
     //output [8:0] nousar
     );
-   wire video_on;
+    wire video_on;
     wire [9:0] pixel_x, pixel_y;
     wire [9:0] pixel_xm, pixel_ym;
     reg [7:0] dia,mes,ano,horar,minr,segr,horat,mint,segt;
+    //boton ring : 
+    reg ring;
     
    // wire nouso = 9'b000000000;
     wire clk_25m;
@@ -185,7 +187,7 @@ assign lsbym = pixel_ym [3:0];
 reg [2:0] letter_rgb;
 
 wire [7:0] Data;
-reg [4:0] as; //cambio :de 2 bits a 4 bits
+reg [5:0] as; //cambio :de 2 bits a 4 bits
 //reg [4:0] asd;
 
 // x , y coordinates (0.0) to (639,479)
@@ -385,15 +387,41 @@ localparam pci = 288;localparam pcf = 303;
 localparam mc_i = 304;localparam mc_f = 319;
 localparam cayt = 288;localparam cayb = 319;
 
+
+//botones
+localparam bni = 400;
+localparam bnf = 415;
+localparam boi = 384;
+localparam bof = 399;
+localparam bsi = 400;
+localparam bsf = 415;
+localparam bei = 416;
+localparam bef = 431;
+localparam bi =  400;
+localparam bf = 415;
+
+//ring
+localparam ri = 400;
+localparam rf = 415 ;
+
 // letter output signals
 wire hon, oon, ron, aon, f_on, e_on, c_on, h_on, a_on, ton,ion,mon, eon, r_on, 
 phon,p_hon,pton, pfon,p_fon, p_ton, chon, cfon, cton , caon, cmon,cpon, cm_on, 
 gph,gpf, gpt,uno, dos, tres,dh,dmin,dseg,dph1, dph2, g1fon, g2fon,dpt1, dpt2,
-uh,umin,useg,dd,ud,dm,um,da,ua,dht,uht,dmint,umint,dsegt,usegt;
+uh,umin,useg,dd,ud,dm,um,da,ua,dht,uht,dmint,umint,dsegt,usegt,bn,bo,bs,be,b,ring1;
 
 // CUERPO
 
 // pixel within letters & signs & numbers
+
+//ring
+assign ring1 = (ri<=pixel_x) && (pixel_x<=rf) &&(y_t<=pixel_y) && (pixel_y<=y_b);
+//botones
+assign bn = (bni<=pixel_xm)&&(pixel_xm<=bnf) && (phyi<=pixel_ym)&&(pixel_ym<=phyf) ;
+assign bo = (boi<=pixel_xm)&&(pixel_xm<=bof) && (pfyi<=pixel_ym)&&(pixel_ym<=pfyf) ;
+assign bs = (bsi<=pixel_xm)&&(pixel_xm<=bsf) && (ptyi<=pixel_ym)&&(pixel_ym<=ptyf) ;
+assign be = (bei<=pixel_xm)&&(pixel_xm<=bef) && (pfyi<=pixel_ym)&&(pixel_ym<=pfyf) ;
+assign b = (bi<=pixel_xm)&&(pixel_xm<=bf) && (pfyi<=pixel_ym)&&(pixel_ym<=pfyf) ;
 
 //numeros
 assign uno = (uxi<=pixel_x)&&(pixel_x<=uxf) && (uyi<=pixel_y)&&(pixel_y<=uyf) ;
@@ -490,96 +518,114 @@ always @*
    begin
          //hora
 if (hon|h_on|p_hon)
-    as <= 5'h11;
+    as <= 6'h11;
 else if (oon)
-    as <= 5'h12;
+    as <= 6'h12;
 else if (ron|r_on)
-    as <= 5'h13;
+    as <= 6'h13;
 else if (aon|a_on|caon)
-    as <= 5'h14; //se agrega 
+    as <= 6'h14; //se agrega 
    
    //fecha
 else if (f_on|p_fon)
-    as <= 5'h15; //se agrega 
+    as <= 6'h15; //se agrega 
 else if (e_on|eon)
-    as <= 5'h16; //se agrega 
+    as <= 6'h16; //se agrega 
 else if (c_on)
-    as <= 5'h17; //se agrega 
+    as <= 6'h17; //se agrega 
 
     
     //timer
 else if (ton|p_ton)
-    as <= 5'h18; //se agrega 
-else if (ion)
-    as <= 5'h19; //se agrega 
+    as <= 6'h18; //se agrega 
+else if (ion|bo)
+    as <= 6'h19; //se agrega 
 else if (mon|cmon|cm_on)
-    as <= 5'h0a; //se agrega 
+    as <= 6'h0a; //se agrega 
 else if (cpon|phon|pfon|pton)
-    as <= 5'h0b; //se agrega //letraP
+    as <= 6'h0b; //se agrega //letraP
          
     //signos
 else if (gph|gpf|gpt)
-    as <= 5'h0c;
+    as <= 6'h0c;
 else if (dph1|dph2|dpt1|dpt2)
-    as <= 5'h0d;
+    as <= 6'h0d;
 else if (g1fon|g2fon)
-    as <= 5'h0e;
+    as <= 6'h0e;
     
     //numeros
 else if (uno)
-    as <= 5'h01;
+    as <= 6'h01;
 else if (dos)
-    as <= 5'h02;
+    as <= 6'h02;
 else if (tres)
-    as <= 5'h03;
+    as <= 6'h03;
+else if (b)
+    as <= 6'h20; 
+else if (bn)
+    as <= 6'h21;
+else if (bs)
+    as <= 6'h22;
+else if (be)
+    as <= 6'h10;
+   
+
  
 // input wire [7:0] dia,mes,ano,horar,minr,segr,horat,mint,segt   
 //dh,dmin,dseg,uh,umin,useg,dd,ud,dm,um,da,ua,dht,uht,dmint,umint,dsegt,usegt
     //parte dinamica
 else if (dh)
-    as <= {1'b0,horar[7:4]};
-else if (uh) 
-    as <= {1'b0,horar[3:0]};
+    as <= {2'b0,horar[7:4]};
+else if (uh)
+    as <= {2'b0,horar[3:0]};
 else if (dmin)
-    as <= {1'b0,minr[7:4]};
+    as <= {2'b0,minr[7:4]};
 else if (umin) 
-    as <= {1'b0,minr[3:0]};
+    as <= {2'b0,minr[3:0]};
 else if (dseg)
-    as <= {1'b0,segr[7:4]};
+    as <= {2'b0,segr[7:4]};
 else if (useg) 
-    as <= {1'b0,segr[3:0]};
+    as <= {2'b0,segr[3:0]};
     
 else if (dd)
-    as <= {1'b0,dia[7:4]};
+    as <= {2'b0,dia[7:4]};
 else if (ud) 
-    as <= {1'b0,dia[3:0]};
+    as <= {2'b0,dia[3:0]};
 else if (dm)
-    as <= {1'b0,mes[7:4]};
+    as <= {2'b0,mes[7:4]};
 else if (um) 
-    as <= {1'b0,mes[3:0]};
+    as <= {2'b0,mes[3:0]};
 else if (da)
-    as <= {1'b0,ano[7:4]};
+    as <= {2'b0,ano[7:4]};
 else if (ua) 
-    as <= {1'b0,ano[3:0]};   
+    as <= {2'b0,ano[3:0]};   
 
 else if (dht)
-    as <= {1'b0,horat[7:4]};
+    as <= {2'b0,horat[7:4]};
 else if (uht) 
-    as <= {1'b0,horat[3:0]};
+    as <= {2'b0,horat[3:0]};
 else if (dmint)
-    as <= {1'b0,mint[7:4]};
-else if (umin) 
-    as <= {1'b0,mint[3:0]};
+    as <= {2'b0,mint[7:4]};
+else if (umint) 
+    as <= {2'b0,mint[3:0]};
 else if (dsegt)
-    as <= {1'b0,segt[7:4]};
+    as <= {2'b0,segt[7:4]};
 else if (usegt) 
-    as <= {1'b0,segt[3:0]};   
+    as <= {2'b0,segt[3:0]};   
+else if (ring1)
+    as <= 6'h23;
+ // if  (ring == 1)
+   // as <= 6'h23;
+ // else
+   // as <= 6'h0f;
+  
+    
 
  
 
     
 else
-   as <= 5'h0f;   
+   as <= 6'h0f;   
 end
 
  
@@ -609,12 +655,17 @@ always @*
     if (~video_on)
         rgbtext = 3'b000; // blank 
     else if (hon|oon|ron|aon|f_on|e_on|c_on|h_on|a_on|ton|ion|mon|eon|r_on|caon|cmon|cpon|
-            cm_on|phon|pfon|pton|p_hon|p_fon|p_ton|gph|gpf|gpt|g1fon|g2fon|dph1|dph2|dpt1|
+            cm_on|gph|gpf|gpt|g1fon|g2fon|dph1|dph2|dpt1|
             dpt2|uno|dos|tres|dh|uh|dmin|umin|dseg|useg|dd|ud|dm|um|da|ua|dht|uht|dmint|
             umint|dsegt|usegt)  
         rgbtext = letter_rgb; 
     else if (chon|cfon|cton)
         rgbtext = 3'b111;
+    else if (bn|bo|bs|be|b|phon|pfon|pton|p_hon|p_fon|p_ton)    
+        rgbtext  = letter_rgb <= 3'b010;
+    else if (ring1)
+        rgbtext  = letter_rgb <= 3'b001;
+        
     else
         rgbtext = 3'b000; // black background
 endmodule
@@ -622,13 +673,13 @@ endmodule
 
 
 module ROM (
-input wire [4:0]as,
+input wire [5:0]as,
 input wire [4:1]lsby,
 //input wire [3:0]lsbym,
 output reg [7:0]data 
 );
 
-reg [8:0]adress;
+reg [9:0]adress;
 
 always @*
     adress <= {as,lsby};
@@ -1084,6 +1135,98 @@ always @*
        9'h00d: data = 8'b01111110; 
        9'h00e: data = 8'b01111110; 
        9'h00f: data = 8'b00000000; 
+       
+       //code D
+        
+       9'h100: data = 8'b00000000; 
+       9'h101: data = 8'b01111000; 
+       9'h102: data = 8'b01111110; 
+       9'h103: data = 8'b01111110; 
+       9'h104: data = 8'b01100110; 
+       9'h105: data = 8'b01100110; 
+       9'h106: data = 8'b01100110; 
+       9'h107: data = 8'b01100110; 
+       9'h108: data = 8'b01100110; 
+       9'h109: data = 8'b01100110; 
+       9'h10a: data = 8'b01100110; 
+       9'h10b: data = 8'b01100110; 
+       9'h10c: data = 8'b01111100; 
+       9'h10d: data = 8'b01111100; 
+       9'h10e: data = 8'b01111000; 
+       9'h10f: data = 8'b00000000; 
+       
+       //code boton       
+        10'h200: data = 8'b00000000;
+        10'h201: data = 8'b00111100;
+        10'h202: data = 8'b00111100; 
+        10'h203: data = 8'b00111100; 
+        10'h204: data = 8'b00111100; 
+        10'h205: data = 8'b01111110; 
+        10'h206: data = 8'b01111110; 
+        10'h207: data = 8'b01111110; 
+        10'h208: data = 8'b01111110; 
+        10'h209: data = 8'b00111100; 
+        10'h20a: data = 8'b00111100; 
+        10'h20b: data = 8'b00111100; 
+        10'h20c: data = 8'b00111100; 
+        10'h20d: data = 8'b00111100; 
+        10'h20e: data = 8'b00000000; 
+        10'h20f: data = 8'b00000000;
+
+      //code flecha arriba
+       10'h210: data = 8'b00000000;
+       10'h211: data = 8'b00011000;
+       10'h212: data = 8'b00011000; 
+       10'h213: data = 8'b00111100; 
+       10'h214: data = 8'b00111100; 
+       10'h215: data = 8'b01111110; 
+       10'h216: data = 8'b01111110; 
+       10'h217: data = 8'b00011000; 
+       10'h218: data = 8'b00011000; 
+       10'h219: data = 8'b00011000; 
+       10'h21a: data = 8'b00011000; 
+       10'h21b: data = 8'b00011000; 
+       10'h21c: data = 8'b00011000; 
+       10'h21d: data = 8'b00011000; 
+       10'h21e: data = 8'b00011000; 
+       10'h21f: data = 8'b00000000; 
+
+        //code flecha abajo
+       10'h220: data = 8'b00000000;
+       10'h221: data = 8'b00011000;
+       10'h222: data = 8'b00011000; 
+       10'h223: data = 8'b00011000; 
+       10'h224: data = 8'b00011000; 
+       10'h225: data = 8'b00011000; 
+       10'h226: data = 8'b00011000; 
+       10'h227: data = 8'b00011000; 
+       10'h228: data = 8'b00011000; 
+       10'h229: data = 8'b01111110; 
+       10'h22a: data = 8'b01111110; 
+       10'h22b: data = 8'b00111100; 
+       10'h22c: data = 8'b00111100; 
+       10'h22d: data = 8'b00011000; 
+       10'h22e: data = 8'b00011000; 
+       10'h22f: data = 8'b00000000; 
+
+        //code luz ring
+       10'h230: data = 8'b00000000;
+       10'h231: data = 8'b00000000;
+       10'h232: data = 8'b00000000; 
+       10'h233: data = 8'b00000000; 
+       10'h234: data = 8'b00000000; 
+       10'h235: data = 8'b00011000; 
+       10'h236: data = 8'b00111100; 
+       10'h237: data = 8'b01111110; 
+       10'h238: data = 8'b01111110; 
+       10'h239: data = 8'b01111110; 
+       10'h23a: data = 8'b01111110; 
+       10'h23b: data = 8'b00111100; 
+       10'h23c: data = 8'b00011000; 
+       10'h23d: data = 8'b00000000; 
+       10'h23e: data = 8'b00000000; 
+       10'h23f: data = 8'b00000000;        
+
 
 
     
