@@ -22,21 +22,21 @@
 
 module proyecto1(
     input reset, clk,
-   // input wire [2:0] rgbswitches,
+   input wire [2:0] rgbswitches,
     output reg [2:0] rgbtext,
-    output wire hsync, vsync
+    output wire hsync, vsync,
 
-    //output video_on,
-    //output wire [9:0] pixel_x, pixel_y,
-     //output wire [9:0] pixel_xm, pixel_ym,
-     //input wire [7:0] dia,mes,ano,horar,minr,segr,horat,mint,segt
+    output video_on,
+    output wire [9:0] pixel_x, pixel_y,
+    output wire [9:0] pixel_xm, pixel_ym,
+    input wire [7:0] dia,mes,ano,horar,minr,segr,horat,mint,segt
   
     //output [8:0] nousar
     );
-    wire video_on;
-    wire [9:0] pixel_x, pixel_y;
-    wire [9:0] pixel_xm, pixel_ym;
-    reg [7:0] dia,mes,ano,horar,minr,segr,horat,mint,segt;
+    //wire video_on;
+    //wire [9:0] pixel_x, pixel_y;
+    //wire [9:0] pixel_xm, pixel_ym;
+    //reg [7:0] dia,mes,ano,horar,minr,segr,horat,mint,segt;
     //boton ring : 
     reg ring;
     
@@ -198,61 +198,61 @@ localparam maxy = 480;
 
 //Switches PROGRAMACION
 //PH
-localparam phi = 224;
-localparam phf = 239;
-localparam p_hi = 240;
-localparam p_hf = 255;
+localparam phi = 16;
+localparam phf = 31;
+localparam p_hi = 32;
+localparam p_hf = 47;
 localparam phyi = 32;
 localparam phyf = 63;
 
-localparam gphix = 256;
-localparam gphfx = 271;
+localparam gphix = 48;
+localparam gphfx = 63;
 localparam gphiy = 32;
 localparam gphfy = 63;
 
 //numero 1
-localparam uxi = 272;
-localparam uxf = 287;
+localparam uxi = 64;
+localparam uxf = 79;
 localparam uyi = 32;
 localparam uyf = 63;
 
 
 //PF
-localparam pfi = 224;
-localparam pff = 239;
-localparam p_fi = 240;
-localparam p_ff = 255;
+localparam pfi = 16;
+localparam pff = 31;
+localparam p_fi = 32;
+localparam p_ff = 47;
 localparam pfyi = 64;
 localparam pfyf = 95;
 
-localparam gpfix = 256;
-localparam gpffx = 271;
+localparam gpfix = 48;
+localparam gpffx = 63;
 localparam gpfiy = 64;
 localparam gpffy = 95;
 
 //numero dos
-localparam dxi = 272; 
-localparam dxf = 287;
+localparam dxi = 64; 
+localparam dxf = 79;
 localparam dyi = 64;
 localparam dyf = 95;
 
 
 //PT
-localparam pti = 224;
-localparam ptf = 239;
-localparam p_ti = 240;
-localparam p_tf = 255;
+localparam pti = 16;
+localparam ptf = 31;
+localparam p_ti = 32;
+localparam p_tf = 47;
 localparam ptyi = 96;
 localparam ptyf = 127;
 
-localparam gptix = 256;
-localparam gptfx = 271;
+localparam gptix = 48;
+localparam gptfx = 63;
 localparam gptiy = 96;
 localparam gptfy = 127;
 
 //numero tres
-localparam txi = 272;
-localparam txf = 287;
+localparam txi = 64;
+localparam txf = 79;
 localparam tyi = 96;
 localparam tyf = 127;
 
@@ -959,8 +959,8 @@ always @*
        //code sig 1
        10'h010: data = 8'b00000000;
        10'h011: data = 8'b00011000;
-       10'h012: data = 8'b00111000; 
-       10'h013: data = 8'b00111000; 
+       10'h012: data = 8'b01111000; 
+       10'h013: data = 8'b01111000; 
        10'h014: data = 8'b00011000; 
        10'h015: data = 8'b00011000; 
        10'h016: data = 8'b00011000; 
@@ -1015,11 +1015,11 @@ always @*
        10'h041: data = 8'b01100110;
        10'h042: data = 8'b01100110; 
        10'h043: data = 8'b01100110; 
-       10'h044: data = 8'b01111110; 
-       10'h045: data = 8'b01111110; 
-       10'h046: data = 8'b00000110; 
-       10'h047: data = 8'b00000110; 
-       10'h048: data = 8'b00000110; 
+       10'h044: data = 8'b01100110; 
+       10'h045: data = 8'b01100110; 
+       10'h046: data = 8'b01100110; 
+       10'h047: data = 8'b01111110; 
+       10'h048: data = 8'b01111110; 
        10'h049: data = 8'b00000110; 
        10'h04a: data = 8'b00000110; 
        10'h04b: data = 8'b00000110; 
@@ -1068,18 +1068,18 @@ always @*
        10'h070: data = 8'b00000000;
        10'h071: data = 8'b01111110;
        10'h072: data = 8'b01111110; 
-       10'h073: data = 8'b01111110; 
-       10'h074: data = 8'b00001110; 
-       10'h075: data = 8'b00001110; 
-       10'h076: data = 8'b00001110; 
-       10'h077: data = 8'b00001110; 
-       10'h078: data = 8'b01111110; 
+       10'h073: data = 8'b00000110; 
+       10'h074: data = 8'b00000110; 
+       10'h075: data = 8'b00001100; 
+       10'h076: data = 8'b00001100; 
+       10'h077: data = 8'b00011000; 
+       10'h078: data = 8'b00011000; 
        10'h079: data = 8'b01111110; 
-       10'h07a: data = 8'b00001110; 
-       10'h07b: data = 8'b00001110; 
-       10'h07c: data = 8'b00001110; 
-       10'h07d: data = 8'b00001110; 
-       10'h07e: data = 8'b00001110; 
+       10'h07a: data = 8'b00110000; 
+       10'h07b: data = 8'b00110000; 
+       10'h07c: data = 8'b01100000; 
+       10'h07d: data = 8'b01100000; 
+       10'h07e: data = 8'b01000000; 
        10'h07f: data = 8'b00000000; 
        
        //code sig 8
@@ -1120,9 +1120,9 @@ always @*
        
        //code sig 0
        10'h000: data = 8'b00000000;
-       10'h001: data = 8'b01111110;
-       10'h002: data = 8'b01111110; 
-       10'h003: data = 8'b01111110; 
+       10'h001: data = 8'b00111100;
+       10'h002: data = 8'b01100110; 
+       10'h003: data = 8'b01100110; 
        10'h004: data = 8'b01100110; 
        10'h005: data = 8'b01100110; 
        10'h006: data = 8'b01100110; 
@@ -1131,9 +1131,9 @@ always @*
        10'h009: data = 8'b01100110; 
        10'h00a: data = 8'b01100110; 
        10'h00b: data = 8'b01100110; 
-       10'h00c: data = 8'b01111110; 
-       10'h00d: data = 8'b01111110; 
-       10'h00e: data = 8'b01111110; 
+       10'h00c: data = 8'b01100110; 
+       10'h00d: data = 8'b01100110; 
+       10'h00e: data = 8'b00111100; 
        10'h00f: data = 8'b00000000; 
        
        //code D
