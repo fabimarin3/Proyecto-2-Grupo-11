@@ -22,21 +22,21 @@
 
 module proyecto1(
     input reset, clk,
-    //input wire [2:0] rgbswitches,
+    input wire [2:0] rgbswitches,
     output reg [2:0] rgbtext,
-    output wire hsync, vsync
+    output wire hsync, vsync,
 
-    //output video_on,
-    //output wire [9:0] pixel_x, pixel_y,
-    //output wire [9:0] pixel_xm, pixel_ym,
-    //input wire [7:0] dia,mes,ano,horar,minr,segr,horat,mint,segt
+    output video_on,
+    output wire [9:0] pixel_x, pixel_y,
+    output wire [9:0] pixel_xm, pixel_ym,
+    input wire [7:0] dia,mes,ano,horar,minr,segr,horat,mint,segt
   
     
     );
-    wire video_on;
-    wire [9:0] pixel_x, pixel_y;
-    wire [9:0] pixel_xm, pixel_ym;
-    reg [7:0] dia,mes,ano,horar,minr,segr,horat,mint,segt;
+    //wire video_on;
+    //wire [9:0] pixel_x, pixel_y;
+    //wire [9:0] pixel_xm, pixel_ym;
+    //reg [7:0] dia,mes,ano,horar,minr,segr,horat,mint,segt;
     //boton ring : 
     reg ring;
     
@@ -974,16 +974,16 @@ always @*
        10'h020: data = 8'b00000000;
        10'h021: data = 8'b01111110;
        10'h022: data = 8'b01111110; 
-       10'h023: data = 8'b01111110; 
-       10'h024: data = 8'b00001110; 
-       10'h025: data = 8'b00001110; 
-       10'h026: data = 8'b00001110; 
-       10'h027: data = 8'b01111110; 
+       10'h023: data = 8'b00000110; 
+       10'h024: data = 8'b00000110; 
+       10'h025: data = 8'b00000110; 
+       10'h026: data = 8'b00000110; 
+       10'h027: data = 8'b00000110; 
        10'h028: data = 8'b01111110; 
-       10'h029: data = 8'b01110000; 
-       10'h02a: data = 8'b01110000; 
-       10'h02b: data = 8'b01110000; 
-       10'h02c: data = 8'b01111110; 
+       10'h029: data = 8'b01100000; 
+       10'h02a: data = 8'b01100000; 
+       10'h02b: data = 8'b01100000; 
+       10'h02c: data = 8'b01100000; 
        10'h02d: data = 8'b01111110; 
        10'h02e: data = 8'b01111110; 
        10'h02f: data = 8'b00000000; 
