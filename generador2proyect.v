@@ -22,30 +22,26 @@
 
 module proyecto1(
     input reset, clk,
-   input wire [2:0] rgbswitches,
+    //input wire [2:0] rgbswitches,
     output reg [2:0] rgbtext,
-    output wire hsync, vsync,
+    output wire hsync, vsync
 
-    output video_on,
-    output wire [9:0] pixel_x, pixel_y,
-    output wire [9:0] pixel_xm, pixel_ym,
-    input wire [7:0] dia,mes,ano,horar,minr,segr,horat,mint,segt
+    //output video_on,
+    //output wire [9:0] pixel_x, pixel_y,
+    //output wire [9:0] pixel_xm, pixel_ym,
+    //input wire [7:0] dia,mes,ano,horar,minr,segr,horat,mint,segt
   
-    //output [8:0] nousar
+    
     );
-    //wire video_on;
-    //wire [9:0] pixel_x, pixel_y;
-    //wire [9:0] pixel_xm, pixel_ym;
-    //reg [7:0] dia,mes,ano,horar,minr,segr,horat,mint,segt;
+    wire video_on;
+    wire [9:0] pixel_x, pixel_y;
+    wire [9:0] pixel_xm, pixel_ym;
+    reg [7:0] dia,mes,ano,horar,minr,segr,horat,mint,segt;
     //boton ring : 
     reg ring;
     
-   // wire nouso = 9'b000000000;
     wire clk_25m;
-    //assign nousar = nouso;
-    //wire video_on;
     
-    //wire [9:0] pixel_x, pixel_y;    
     reg clk_d;
     reg [1:0] count;
     wire clk_div;
@@ -802,7 +798,7 @@ always @*
        10'h164: data = 8'b01100000; //11100000
        10'h165: data = 8'b01100000; //11100000
        10'h166: data = 8'b01100000; //11100000
-       10'h67: data = 8'b01111110; //11111111
+       10'h167: data = 8'b01111110; //11111111
        10'h168: data = 8'b01100000; //11100000
        10'h169: data = 8'b01100000; //11100000
        10'h16a: data = 8'b01100000; //11100000
@@ -1070,16 +1066,16 @@ always @*
        10'h072: data = 8'b01111110; 
        10'h073: data = 8'b00000110; 
        10'h074: data = 8'b00000110; 
-       10'h075: data = 8'b00001100; 
+       10'h075: data = 8'b00000110; 
        10'h076: data = 8'b00001100; 
-       10'h077: data = 8'b00011000; 
-       10'h078: data = 8'b00011000; 
+       10'h077: data = 8'b00001100; 
+       10'h078: data = 8'b00001100; 
        10'h079: data = 8'b01111110; 
-       10'h07a: data = 8'b00110000; 
-       10'h07b: data = 8'b00110000; 
-       10'h07c: data = 8'b01100000; 
-       10'h07d: data = 8'b01100000; 
-       10'h07e: data = 8'b01000000; 
+       10'h07a: data = 8'b00011000; 
+       10'h07b: data = 8'b00011000; 
+       10'h07c: data = 8'b00011000; 
+       10'h07d: data = 8'b00110000; 
+       10'h07e: data = 8'b00110000; 
        10'h07f: data = 8'b00000000; 
        
        //code sig 8
