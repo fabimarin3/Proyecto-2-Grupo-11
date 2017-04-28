@@ -110,13 +110,13 @@ begin
     direc_next = 8'hzz;
     dato_smh_next = 8'hzz;
     flag_rtc_next = 0;
-    lea_escriba_next = 1'bz;
-    sw_seg_next = 0;
-    sw_min_next = 0;
-    sw_hor_next = 0;
-    vga_seg_next = 8'hzz;
-    vga_min_next = 8'hzz;
-    vga_hor_next = 8'hzz;
+    lea_escriba_next = 1'b0;
+    sw_seg_next = sw_seg;
+    sw_min_next = sw_min;
+    sw_hor_next = sw_hor;
+    vga_seg_next = 8'h00;
+    vga_min_next = 8'h00;
+    vga_hor_next = 8'h00;
     rd_hora_next = 1;
     ciclos = 0;
     hora_activo_next = 0;
@@ -132,6 +132,7 @@ begin
               rd_hora_next = 0;
               load_hora_activo = 1;
               hora_activo_next = 1;
+              state_next = espera;
               if (~siga)
               begin
                   load_ciclos = 1;
@@ -139,8 +140,8 @@ begin
                   if (contador == ciclos)
                   begin
                       ciclos = 0;
-                      load_rtc = 1;
-                      flag_rtc_next = 1;
+                      //load_rtc = 1;
+                      //flag_rtc_next = 1;
                       state_next = state_1;
                   end
               end
@@ -166,10 +167,10 @@ begin
 
       state_12:
       begin
+          load_dato_in = 1;
           state_next = state_12;
           if (tome)
           begin
-              load_dato_in = 1;
               dato_in_next = rtc;
           end
           if (~siga)
@@ -185,7 +186,7 @@ begin
           load_dato = 1;
           load_lea_escriba = 1;
           lea_escriba_next = 1;
-          dato_smh_next = {dato_in[7:6], 1'b1, dato_in[4:0]};
+          dato_smh_next = {dato_in[7:5], 1'b0, dato_in[3:0]};
           state_next = state_2;
           load_rtc = 1;
           load_ciclos = 1;
@@ -203,7 +204,7 @@ begin
           if (~siga)
           begin
               state_next = state_3;
-              load_hora_activo = 1;
+              //load_hora_activo = 1;
           end
       end
 
@@ -213,30 +214,33 @@ begin
           sw_seg_next = sw_seg;
           sw_min_next = sw_min;
           sw_hor_next = sw_hor;
+          load_vga = 1;
+          vga_seg_next = sw_seg_reg;
+          vga_min_next = sw_min_reg;
+          vga_hor_next = sw_hor_reg;
           state_next = state_4;
       end
 
       state_4:
       begin
-          load_vga = 1;
-          state_next = state_4;
-          vga_seg_next = sw_seg_reg;
-          vga_min_next = sw_min_reg;
-          vga_hor_next = sw_hor_reg;
           if (~sw_hora)
           begin
               load_hora_activo = 1;
               hora_activo_next = 1;
+              state_next = state_4;
               if (~siga)
               begin
                   load_ciclos = 1;
                   ciclos = 5;
+                  state_next = state_4;
                   if (contador == ciclos)
                   begin
                       ciclos = 0;
                       load_rtc = 1;
                       flag_rtc_next = 1;
                       state_next = state_5;
+                      load_lea_escriba = 1;
+                      lea_escriba_next = 1;
                   end
               end
           end
@@ -247,15 +251,18 @@ begin
       state_5:
       begin
           load_direc = 1;
+          load_lea_escriba = 1;
+          lea_escriba_next = 1;
           direc_next = 8'h21;
-          dato_smh_next = vga_seg_reg;
+          load_dato = 1;
+          dato_smh_next = sw_seg_reg;
           state_next = state_5;
-          load_rtc = 1;
           load_ciclos = 1;
           ciclos = 2;
           if (contador == ciclos)
           begin
               ciclos = 0;
+              load_rtc = 1;
               state_next = state_14;
           end
       end
@@ -274,15 +281,17 @@ begin
       state_6:
       begin
           load_direc = 1;
+          load_dato = 1;
           direc_next = 8'h22;
-          dato_smh_next = vga_min_reg;
+          dato_smh_next = sw_min_reg;
           state_next = state_6;
-          load_rtc = 1;
+          //load_rtc = 1;
           load_ciclos = 1;
           ciclos = 2;
           if (contador == ciclos)
           begin
               ciclos = 0;
+              load_rtc = 1;
               state_next = state_15;
           end
 
@@ -303,15 +312,17 @@ begin
       state_7:
       begin
           load_direc = 1;
+          load_dato = 1;
           direc_next = 8'h23;
-          dato_smh_next = vga_hor_reg;
+          dato_smh_next = sw_hor_reg;
           state_next = state_7;
-          load_rtc = 1;
+          //load_rtc = 1;
           load_ciclos = 1;
           ciclos = 2;
           if (contador == ciclos)
           begin
               ciclos = 0;
+              load_rtc = 1;
               state_next = state_16;
           end
       end
@@ -331,8 +342,8 @@ begin
       begin
           load_direc = 1;
           load_lea_escriba = 1;
-          lea_escriba_next = 0;
-          direc_next = 8'h00;
+          lea_escriba_next = 1;
+          direc_next = 8'hf1;
           state_next = state_8;
           load_rtc = 1;
           load_ciclos = 1;
@@ -347,16 +358,16 @@ begin
       state_17:
       begin
           state_next = state_17;
-          if (tome)
-          begin
-              load_dato_in = 1;
-              dato_in_next = rtc;
-          end
+          //if (tome)
+          //begin
+          //    load_dato_in = 1;
+          //    dato_in_next = rtc;
+          //end
           if (~siga)
           begin
-              state_next = state_9;
+              state_next = state_10;
               load_rtc = 1;
-              flag_rtc_next = 1;
+              //flag_rtc_next = 1;
           end
       end
 
@@ -365,7 +376,7 @@ begin
           load_dato = 1;
           load_lea_escriba = 1;
           lea_escriba_next = 1;
-          dato_smh_next = {dato_in[7:6], 1'b0, dato_in[4:0]};
+          dato_smh_next = {dato_in[7:5], 1'b0, dato_in[3:0]};
           state_next = state_9;
           load_rtc = 1;
           load_ciclos = 1;
@@ -422,9 +433,9 @@ begin
         sw_seg_reg = 8'h00;
         sw_min_reg = 8'h00;
         sw_hor_reg = 8'h00;
-        vga_seg_reg = 8'hzz;
-        vga_min_reg = 8'hzz;
-        vga_hor_reg = 8'hzz;
+        vga_seg_reg = 8'h00;
+        vga_min_reg = 8'h00;
+        vga_hor_reg = 8'h00;
         rd_hora_reg = 1;
         ciclos_s = 0;
         hora_activo_reg = 0;

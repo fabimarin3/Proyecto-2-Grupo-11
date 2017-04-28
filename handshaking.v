@@ -47,85 +47,88 @@ begin
     if (reset) begin
         trabaje = 1'b0;
         siga = 1'b0;
-        direcion_rtc = 8'hzz;
-        dato_rtc_in = 8'hzz;
-        dato_hora_rd = 8'hzz;
-        dato_timer_rd = 8'hzz;
-        dato_lectura = 8'hzz;
+        direcion_rtc = 8'h00;
+        dato_rtc_in = 8'h00;
+        dato_hora_rd = 8'h00;
+        dato_timer_rd = 8'h00;
+        dato_lectura = 8'h00;
         lea_escriba = 1'bz;
         puede_leer = 1'b0;
-        tomelo = 1'bz;
+        tomelo = 1'b0;
         read_hora = 1'b1;
         read_timer_lectura = 1'b0;
-        vga_seg = 8'hzz;
-        vga_min = 8'hzz;
-        vga_hor = 8'hzz;
-        vga_dia = 8'hzz;
-        vga_mes = 8'hzz;
-        vga_year = 8'hzz;
-        vga_sd = 8'hzz;
+        vga_seg = 8'h00;
+        vga_min = 8'h00;
+        vga_hor = 8'h00;
+        vga_dia = 8'h00;
+        vga_mes = 8'h00;
+        vga_year = 8'h00;
+        vga_sd = 8'h00;
     end
     else if (~inicializacion)
     begin
         if (~rtc_work)
         begin
             siga = 1'b0;
+            trabaje = flag_ini_rtc;
             direcion_rtc = Direc_ini;
             dato_rtc_in = wr_ini;
             lea_escriba = escriba_ini;
-            tomelo = tome;
-            trabaje = flag_ini_rtc;
-            read_timer_lectura = 1'b0;
-            puede_leer = 1'b0;
-            read_hora = 1'b1;
         end
         else
         begin
             siga = 1'b1;
         end
-
+        read_timer_lectura = 1'b0;
+        puede_leer = 1'b0;
+        read_hora = 1'b1;
     end
     else if (swith_hora)
     begin
         if (~rtc_work)
         begin
             siga = 1'b0;
+            trabaje = flag_escribir_hora;
             lea_escriba = lea_escriba_hora;
             direcion_rtc = Direc_escribir_hora;
-            read_timer_lectura = 1'b0;
-            trabaje = flag_escribir_hora;
-            read_hora = flag_hora_lectura;
             dato_rtc_in = dato_hora_wr;
-            tomelo = tome;
-            puede_leer = 1'b0;
-            vga_seg = seg_vga_hora;
-            vga_min = min_vga_hora;
-            vga_hor = hor_vga_hora;
         end
         else
         begin
             siga = 1'b1;
         end
+        tomelo = tome;
+        puede_leer = 1'b0;
+        trabaje = flag_escribir_hora;
+        direcion_rtc = Direc_escribir_hora;
+        lea_escriba = lea_escriba_hora;
+        read_hora = flag_hora_lectura;
+        vga_seg = seg_vga_hora;
+        vga_min = min_vga_hora;
+        vga_hor = hor_vga_hora;
+        dato_rtc_in = dato_hora_wr;
         if (tome)
+        begin
             dato_hora_rd = rtc_read_wr;
-
+        end
     end
     else if (swith_fecha)
     begin
+        tomelo = tome;
+        vga_dia = dia_vga_fecha;
+        vga_mes = mes_vga_fecha;
+        vga_year = year_vga_fecha;
+        vga_sd = sd_vga_fecha;
+        dato_rtc_in = dato_fecha_wr;
+        puede_leer = 1'b0;
+        direcion_rtc = Direc_escribir_fecha;
         if (~rtc_work)
         begin
             siga = 1'b0;
-            lea_escriba = lea_escriba_fecha;
             trabaje = flag_escribir_fecha;
             direcion_rtc = Direc_escribir_fecha;
             dato_rtc_in = dato_fecha_wr;
-            tomelo = tome;
-            puede_leer = 1'b0;
-            read_timer_lectura = 1'b0;
-            vga_dia = dia_vga_fecha;
-            vga_mes = mes_vga_fecha;
-            vga_year = year_vga_fecha;
-            vga_sd = sd_vga_fecha;
+            lea_escriba = lea_escriba_fecha;
         end
         else
         begin
@@ -135,18 +138,23 @@ begin
 
     else if (swith_timer)
     begin
+        //spuede_leer = 1'b0;
         puede_leer = 1'b0;
+        tomelo = tome;
+        read_timer_lectura = read_timer;
+        direcion_rtc = Direc_timer;
+        dato_rtc_in = dato_timer_wr;
+        lea_escriba = lea_escriba_timer;
+        dato_rtc_in = dato_timer_wr;
         if (~rtc_work)
         begin
             siga = 1'b0;
-            puede_leer = 1'b0;
-            trabaje = lectura_rtc;
-            lea_escriba = lea_escriba_timer;
+            //puede_leer = 1'b0;
+            //trabaje = lectura_rtc;
             trabaje = flag_timer;
+            lea_escriba = lea_escriba_timer;
             direcion_rtc = Direc_timer;
             dato_rtc_in = dato_timer_wr;
-            tomelo = tome;
-            read_timer_lectura = read_timer;
         end
         else
         begin
@@ -158,21 +166,22 @@ begin
     else
     begin
         puede_leer = 1'b1;
+        tomelo = tome;
+        read_timer_lectura = 1;
+        read_hora = flag_hora_lectura;
+        vga_seg = seg_vga_rd;
+        vga_min = min_vga_rd;
+        vga_hor = hor_vga_rd;
+        vga_dia = dia_vga_rd;
+        vga_mes = mes_vga_rd;
+        vga_year = year_vga_rd;
+        vga_sd = sd_vga_rd;
         if (~rtc_work)
         begin
             siga = 1'b0;
+            trabaje = lectura_rtc;
             lea_escriba = lea_lectura;
             direcion_rtc = Direc_lectura;
-            tomelo = tome;
-            read_hora = flag_hora_lectura;
-            trabaje = lectura_rtc;
-            vga_seg = seg_vga_rd;
-            vga_min = min_vga_rd;
-            vga_hor = hor_vga_rd;
-            vga_dia = dia_vga_rd;
-            vga_mes = mes_vga_rd;
-            vga_year = year_vga_rd;
-            vga_sd = sd_vga_rd;
         end
         else
         begin

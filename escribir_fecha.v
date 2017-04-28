@@ -40,7 +40,9 @@ localparam [4:0]                  // estados de la maquina
                 state_8 = 5'h08,
                 state_9 = 5'h09,
                 state_10 = 5'h0a,
-                state_11 = 5'h0b;
+                state_11 = 5'h0b,
+                state_12 = 5'h0c,
+                state_13 = 5'h0d;
 
 reg [3:0] estado, state_next;  //registros de estado
 
@@ -116,26 +118,28 @@ begin
               if (sw_fecha)
               begin
                   state_next = state_1;
+                  load_fecha = 1;
+                  fecha_next = 1;
               end
           end
 
       state_1:
       begin
           load_sw = 1;
+          load_vga = 1;
           sw_dia_next = sw_dia;
           sw_mes_next = sw_mes;
           sw_year_next = sw_year;
           sw_dia_semana_next = sw_dia_semana;
+          vga_dia_next = sw_dia_reg;
+          vga_mes_next = sw_mes_reg;
+          vga_year_next = sw_year_reg;
+          vga_dia_semana_next = sw_dia_semana_reg;
           state_next = state_2;
       end
 
       state_2:
       begin
-          load_vga = 1;
-          vga_dia_next = sw_dia_reg;
-          vga_mes_next = sw_mes_reg;
-          vga_year_next = sw_year_reg;
-          vga_dia_semana_next = sw_dia_semana_reg;
           if (~sw_fecha)
           begin
               load_fecha = 1;
@@ -151,6 +155,8 @@ begin
                       load_rtc = 1;
                       flag_rtc_next = 1;
                       state_next = state_3;
+                      load_lea_escriba = 1;
+                      lea_escriba_next = 1;
                   end
               end
           end
@@ -165,7 +171,7 @@ begin
           load_lea_escriba = 1;
           lea_escriba_next = 1;
           direc_next = 8'h24;
-          dato_dmyd_next = vga_dia_reg;
+          dato_dmyd_next = sw_dia_reg;
           load_rtc = 1;
           load_ciclos = 1;
           ciclos = 2;
@@ -190,10 +196,12 @@ begin
 
       state_4:
       begin
+          load_lea_escriba = 1;
+          lea_escriba_next = 1;
           load_direc = 1;
           load_dato = 1;
           direc_next = 8'h25;
-          dato_dmyd_next = vga_mes_reg;
+          dato_dmyd_next = sw_mes_reg;
           state_next = state_4;
           load_rtc = 1;
           load_ciclos = 1;
@@ -221,7 +229,7 @@ begin
           load_direc = 1;
           load_dato = 1;
           direc_next = 8'h26;
-          dato_dmyd_next = vga_year_reg;
+          dato_dmyd_next = sw_year_reg;
           state_next = state_5;
           load_rtc = 1;
           load_ciclos = 1;
@@ -265,6 +273,34 @@ begin
       state_11:
       begin
           state_next = state_11;
+          if (~siga)
+          begin
+              state_next = state_12;
+              load_rtc = 1;
+              flag_rtc_next = 1;
+          end
+      end
+
+      state_12:
+      begin
+          load_direc = 1;
+          load_dato = 1;
+          direc_next = 8'hf1;
+          dato_dmyd_next = 8'h00;
+          state_next = state_12;
+          load_rtc = 1;
+          load_ciclos = 1;
+          ciclos = 2;
+          if (contador == ciclos)
+          begin
+              ciclos = 0;
+              state_next = state_13;
+          end
+      end
+
+      state_13:
+      begin
+          state_next = state_13;
           if (~siga)
           begin
               state_next = state_7;

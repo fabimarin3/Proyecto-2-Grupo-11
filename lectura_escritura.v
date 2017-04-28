@@ -51,9 +51,13 @@ localparam [3:0]                  // estados de la maquina
 
 reg [3:0] estado, state_next;  //registros de estado
 reg [7:0] add_rtc_m,   // variables de entrada salida rtc
-        add_data_rtc_m,
-        data_rtc_m,
-        data_m_in;
+          add_data_rtc_m,
+          data_rtc_m,
+          data_m_in;
+
+reg [7:0] add_datos, add_datos_next ;
+reg load_add_datos;
+//reg bandera;
 reg a_d = 1,    //senales del rtc
     cs = 1,
     rd = 1,
@@ -71,6 +75,20 @@ reg load_a_d,
     load_flag,
     load_ciclos,
     load_tome;
+
+
+reg flag_direccion, load_flag_direccion, flag_direccion_next;
+
+reg [7:0] b;
+assign add_data_rtc  = flag_direccion ? add_data_rtc_m : 8'hzz;
+assign data = b;
+
+always @ (posedge clk)
+begin
+   b <= add_data_rtc;
+   add_data_rtc_m <= add_datos;
+end
+
 
 //logica de estado siguiente
 always @ (posedge clk, posedge reset)
@@ -108,11 +126,15 @@ begin
     load_flag =  1'b0;
     load_ciclos = 1'b0;
     load_tome = 1'b0;
+    flag_direccion_next = 0;
+    load_flag_direccion = 0;
     state_next = espera;
+    add_datos_next = 8'hzz;
+    load_add_datos = 0;
     add_rtc_m = add;  //esto me esta reiniciando siempre todas las variables por lo que el flag out solo dura un periodo
     data_m_in = datos;  //una opcion es ponerlo en datos los case para que se mantengan ya que no lo hacen
-    add_data_rtc_m = 8'hzz;
-    data_rtc_m = 8'hzz;
+    //add_data_rtc_m = 8'hzz;
+    //data_rtc_m = 8'hzz;
     case (estado)
         espera:
         begin
@@ -136,7 +158,7 @@ begin
             load_wr = 1;
             cs = 0;
             wr = 0;
-            ciclos = 4;
+            ciclos = 2;
             state_next = state_2;
             if (contador == ciclos)
             begin
@@ -146,7 +168,11 @@ begin
         end
         state_3:
         begin
-            add_data_rtc_m = add_rtc_m;
+            //bandera = 1;
+            load_flag_direccion = 1;
+            flag_direccion_next = 1;
+            load_add_datos = 1;
+            add_datos_next = add_rtc_m;
             load_ciclos = 1;
             ciclos = 2;
             state_next = state_3;
@@ -160,27 +186,31 @@ begin
         begin
             load_cs = 1;
             load_wr = 1;
-            add_data_rtc_m = add_rtc_m;
+            //bandera = 1;
+            //add_data_rtc_m = add_rtc_m;
             state_next = state_5;
         end
         state_5:
         begin
             load_a_d = 1;
             load_ciclos = 1;
-            add_data_rtc_m = add_rtc_m;
+            //bandera = 1;
+            //add_data_rtc_m = add_rtc_m;
             state_next = state_5;
             ciclos = 3;
             if (contador == ciclos)
             begin
                 state_next = state_6;
                 ciclos = 0;
+                load_flag_direccion = 1;
             end
         end
         state_6:
         begin
             load_ciclos = 1;
             state_next = state_6;
-            ciclos = 7;
+            load_add_datos = 1;
+            ciclos = 6;
             if (contador == ciclos)
             begin
                 state_next = state_7;
@@ -202,9 +232,11 @@ begin
             begin
                 cs = 1'b0;
                 wr = 1'b0;
+                load_flag_direccion = 1;
+                flag_direccion_next = 1;
             end
             state_next = state_7;
-            ciclos = 4;
+            ciclos = 2;
             if (contador == ciclos)
             begin
                 state_next = state_8;
@@ -214,16 +246,22 @@ begin
         state_8:
         begin
             load_ciclos = 1;
-            if (~lee_escribe_m)
+            //if (~lee_escribe_m)
+            //begin
+            //    data_rtc_m = add_data_rtc_m;
+            //end
+            //else
+            //begin
+                //bandera = 1;
+            //    add_data_rtc_m = data_m_in;
+            //end
+            if (lee_escribe_m)
             begin
-                data_rtc_m = add_data_rtc_m;
-            end
-            else
-            begin
-                add_data_rtc_m = data_m_in;
+                load_add_datos = 1;
+                add_datos_next = data_m_in;
             end
             state_next = state_8;
-            ciclos = 4;
+            ciclos = 3;
             if (contador == ciclos)
             begin
                 state_next = state_9;
@@ -232,21 +270,19 @@ begin
         end
         state_9:
         begin
-            load_cs = 1;
-            load_rd = 1;
-            load_wr = 1;
             load_ciclos = 1;
             state_next = state_9;
             if (~lee_escribe_m)
             begin
                 flag_tome_dato = 1;
                 load_tome = 1;
-                data_rtc_m = add_data_rtc_m;
+                //data_rtc_m = add_data_rtc_m;
             end
-            else
-            begin
-                add_data_rtc_m = data_m_in;
-            end
+            //else
+            //begin
+                //bandera = 1;
+            //    add_data_rtc_m = data_m_in;
+            //end
             ciclos = 2;
             if (contador == ciclos)
             begin
@@ -257,27 +293,41 @@ begin
 
         state_10:
         begin
-            load_tome = 1;
-            state_next = state_11;
-            if (~lee_escribe_m)
+            load_cs = 1;
+            load_rd = 1;
+            load_wr = 1;
+            load_ciclos = 1;
+            state_next = state_10;
+            //if (~lee_escribe_m)
+            //begin
+            //    data_rtc_m = add_data_rtc_m;
+            //end
+            //else
+            //begin
+                //bandera = 1;
+            //    add_data_rtc_m = data_m_in;
+            //end
+            ciclos = 2;
+            if (contador == ciclos)
             begin
-                data_rtc_m = add_data_rtc_m;
-            end
-            else
-            begin
-                add_data_rtc_m = data_m_in;
+                state_next = state_11;
+                ciclos = 0;
             end
         end
         state_11:
         begin
-            if (~lee_escribe_m)
-            begin
-                data_rtc_m = add_data_rtc_m;
-            end
-            else
-            begin
-                add_data_rtc_m = data_m_in;
-            end
+            load_tome = 1;
+            load_flag_direccion = 1;
+            load_add_datos = 1;
+            //if (~lee_escribe_m)
+            //begin
+            //    data_rtc_m = add_data_rtc;
+            //end
+            //else
+            //begin
+                //bandera = 1;
+            //    add_data_rtc_m = data_m_in;
+            //end
             state_next = state_12;
         end
         state_12:
@@ -304,6 +354,9 @@ begin
         flag_work_out =  1'b0;
         ciclos_s = 0;
         tomar_dato = 0;
+        flag_direccion = 0;
+        add_datos = 8'hzz;
+        
     end
     else
     begin
@@ -321,11 +374,26 @@ begin
         ciclos_s = ciclos;
     if (load_tome)
         tomar_dato = flag_tome_dato;
+    //if (bandera)
+        //add_data_rtc_m = add_data_rtc;
+    if (load_flag_direccion)
+        flag_direccion = flag_direccion_next;
+
+    if (load_add_datos)
+        add_datos = add_datos_next;
     end
 end
 
-assign data = data_rtc_m;
-assign add_data_rtc = add_data_rtc_m;
+//reg [7:0] a, b;
+//assign add_data_rtc = lee_escribe_m ? add_data_rtc : 8'hzz;
+//assign data_rtc_m = b;
+//always @ ( posedge clk ) begin
+  //b <= add_data_rtc;
+  //add <= datos;
+//end
+
+//assign data = data_rtc_m;
+//assign add_data_rtc = add_data_rtc_m;
 //assign auxiliar = estado;
 //assign ciclo = ciclos_s;
 assign flag_work_s = flag_work_out;

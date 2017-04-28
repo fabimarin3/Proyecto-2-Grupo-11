@@ -53,7 +53,10 @@ localparam [4:0]                  // estados de la maquina
                 state_21 = 5'h15,
                 state_22 = 5'h16,
                 state_23 = 5'h17,
-                state_24 = 5'h18;
+                state_24 = 5'h18,
+                state_25 = 5'h19,
+                state_26 = 5'h1a,
+                state_27 = 5'h1b;
 
 reg [4:0] estado, state_next;  //registros de estado
 reg [3:0] ciclos = 0, contador = 0, ciclos_s = 0;
@@ -63,7 +66,6 @@ reg load_timer, timer_reg, timer_next, load_ciclos;
 reg [7:0] segt_s_reg, mint_s_reg, hort_s_reg, segt_s_next, mint_s_next, hort_s_next;
 
 reg [7:0] sw_c_seg, sw_c_min, sw_c_hor;
-reg load_sw;
 
 reg [7:0] segT_reg, minT_reg, horT_reg,segT_next, minT_next, horT_next,segT_c, minT_c, horT_c;
 
@@ -76,7 +78,7 @@ reg [7:0] sw_seg_reg, sw_min_reg, sw_hor_reg, sw_seg_next, sw_min_next, sw_hor_n
 
 reg [7:0] direc_reg, direc_next, dato_in, dato_next, dato_out_next, dato_out_reg;
 
-reg flag_rtc_next /*para decir que va usar el rtc*/, lea_escriba_next, rd_timer_next, flag_rtc_reg, flag_lea_escriba_reg;
+reg flag_rtc_next /*para decir que va usar el rtc*/, lea_escriba_next, /*rd_timer_next*/ flag_rtc_reg, flag_lea_escriba_reg;
 
 reg flag_rd_timer_next, flag_rd_timer;
 
@@ -113,8 +115,8 @@ end
 always @*
 begin
     flag_rtc_next = 1'b0;
-    lea_escriba_next = 1'bz;
-    rd_timer_next = 1'b0;
+    lea_escriba_next = 1'b0;
+    //rd_timer_next = 1'b0;
     flag_ring_next = 0;
     flag_rd_timer_next = 0;
 
@@ -122,9 +124,9 @@ begin
     sw_min_next = 8'd00;
     sw_hor_next = 8'd00;
 
-    direc_next = 8'hzz;
+    direc_next = 8'h00;
     dato_next = 8'hzz;
-    dato_out_next = 8'hzz;
+    dato_out_next = 8'h00;
 
     state_next = espera;
     timer_next = 0;
@@ -155,18 +157,18 @@ begin
     load_resta = 0;
     load_timer = 0;
     load_ciclos = 0;
-    load_sw = 0;
 
     case (estado)
 
         espera:
         begin
             if (sw_timer)
-                state_next = state_1;
+                state_next = state_25;
         end
 
-        state_1:
+        state_25:
         begin
+            state_next = state_1;
             load_datos_sw = 1;
             sw_seg_next = sw_seg;
             sw_min_next = sw_min;
@@ -176,14 +178,19 @@ begin
             mint_s_next = sw_min_reg;
             hort_s_next = sw_hor_reg;
             state_next = state_1;
+        end
+
+        state_1:
+        begin
             if (~sw_timer)
             begin
-                if (sw_seg == 0 & sw_min == 0 & sw_hor == 0 & ~siga)
+                if (sw_seg_reg == 0 & sw_min_reg == 0 & sw_hor_reg == 0 & ~siga)
                     state_next = espera;
                 else
                 begin
                     load_timer = 1;
                     timer_next = 1;
+                    state_next = state_2;
                     if (~siga)
                     begin
                         load_ciclos = 1;
@@ -198,14 +205,16 @@ begin
                     end
                 end
             end
+            else
+                state_next = state_25;
         end
 
         state_2:
         begin
-            load_sw = 1;
-            sw_seg_next = sw_seg;
-            sw_min_next = sw_min;
-            sw_hor_next = sw_hor;
+            load_datos_sw = 1;
+            sw_seg_next = sw_c_seg;
+            sw_min_next = sw_c_min;
+            sw_hor_next = sw_c_hor;
             load_direc = 1;
             flag_rtc_next = 1;
             direc_next = 8'h00;
@@ -248,7 +257,7 @@ begin
             load_lea_escriba = 1;
             lea_escriba_next = 1;
             load_out = 1;
-            dato_out_next = {dato_in[7:4],1'b0,dato_in [2:0]};
+            dato_out_next = {dato_in[7:4],1'b1,dato_in [2:0]};
             state_next = state_3;
             load_rtc = 1;
             load_ciclos = 1;
@@ -317,10 +326,14 @@ begin
             if ((segt_s_reg == 8'h00) & (mint_s_reg == 8'h00) & (hort_s_reg == 8'h00))
             begin
                 state_next = state_7;
+                //load_timer = 1;
+                //timer_next = 1;
+                load_rd_timer = 1;
                 if (~siga)
                 begin
                     load_ciclos = 1;
                     ciclos = 8;
+                    state_next = state_7;
                     if (contador == ciclos)
                     begin
                         ciclos = 0;
@@ -365,9 +378,11 @@ begin
 
         state_10:
         begin
+            load_lea_escriba = 1;
+            lea_escriba_next = 0;
             load_direc = 1;
             load_rtc = 1;
-            flag_rtc_next = 1;
+            //flag_rtc_next = 1;
             direc_next = 8'h00;
             state_next = state_10;
             load_rtc = 1;
@@ -410,7 +425,7 @@ begin
             load_lea_escriba = 1;
             lea_escriba_next = 1;
             load_out = 1;
-            dato_out_next = {dato_in[7:4],1'b1,dato_in [2:0]};
+            dato_out_next = {dato_in[7:4], 1'b0, dato_in [2:0]};
             state_next = state_11;
             load_rtc = 1;
             load_ciclos = 1;
@@ -507,6 +522,33 @@ begin
         state_24:
         begin
             state_next = state_24;
+            if (~siga)
+            begin
+                state_next = state_26;
+                load_rtc = 1;
+                flag_rtc_next = 1;
+            end
+        end
+
+        state_26:
+            begin
+            load_direc = 1;
+            direc_next = 8'hf2;
+            dato_out_next = 8'h00;
+            state_next = state_26;
+            load_rtc = 1;
+            load_ciclos = 1;
+            ciclos = 2;
+            if (contador == ciclos)
+            begin
+                ciclos = 0;
+                state_next = state_24;
+            end
+        end
+
+        state_27:
+        begin
+            state_next = state_27;
             if (~siga)
             begin
                 state_next = state_15;
@@ -656,34 +698,28 @@ begin
         if (load_ciclos)
             ciclos_s = ciclos;
 
-        if (load_sw)
-        begin
-            sw_seg_reg = sw_c_seg;
-            sw_min_reg = sw_c_min;
-            sw_hor_reg = sw_c_hor;
-        end
     end
 end
 
 
 //convierte los numeros que vienen del rtc a decimal
-always @(posedge clk, posedge reset)
+always @*
 begin
-    if (reset)
-    begin
-        segT_c = 0;
-        minT_c = 0;
-        horT_c = 0;
-        resta_seg_reg = 0;
-        resta_min_reg = 0;
-        resta_hor_reg = 0;
-        sw_c_seg = 0;
-        sw_c_min = 0;
-        sw_c_hor = 0;
+    //if (reset)
+    //begin
+    //    segT_c = 0;
+    //    minT_c = 0;
+    //    horT_c = 0;
+    //    resta_seg_reg = 0;
+    //    resta_min_reg = 0;
+    //    resta_hor_reg = 0;
+    //    sw_c_seg = 0;
+    //    sw_c_min = 0;
+    //    sw_c_hor = 0;
 
-    end
-    else
-    begin
+    //end
+    //else
+    //begin
         case(segT) //pasa la conversion de segundos
         8'h00: segT_c = 8'd00;
         8'h01: segT_c = 8'd01;
@@ -996,8 +1032,8 @@ begin
         default: resta_hor_reg = 8'hff;
         endcase
 
-        if (sw_timer)
-        begin
+      //  if (sw_timer)
+      //  begin
             case(sw_seg) //pasa la conversion de segundos
             8'h00: sw_c_seg = 8'd00;
             8'h01: sw_c_seg = 8'd01;
@@ -1153,8 +1189,8 @@ begin
             8'h23: sw_c_hor = 8'd23;
             default: sw_c_hor = 8'd255;
             endcase
-        end
-    end
+    //    end
+    //end
 end
 
 

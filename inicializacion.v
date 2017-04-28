@@ -192,8 +192,8 @@ always@*
         s3:
         begin
             Load = 1'b1;
-            Direc_reg_next = 8'h00;
-            WR_reg_next =  8'h08;
+            Direc_reg_next = 8'h02;
+            WR_reg_next =  8'h00;
             estado_sig = s3;
             load_rtc = 1'b1;
             load_ciclos = 1'b1;
@@ -219,7 +219,8 @@ always@*
         s4:
         begin
             Load = 1'b1;
-            Direc_reg_next = 8'h02;
+            Direc_reg_next = 8'h00;
+            WR_reg_next =  8'h00;
             estado_sig = s4;
             load_rtc = 1'b1;
             load_ciclos = 1'b1;
@@ -324,6 +325,7 @@ always@*
         begin
             Load = 1'b1;
             Direc_reg_next = 8'h24;
+            WR_reg_next =  8'h01;
             estado_sig = s8;
             load_rtc = 1'b1;
             load_ciclos = 1'b1;
@@ -350,6 +352,7 @@ always@*
         begin
             Load = 1'b1;
             Direc_reg_next = 8'h25;
+            WR_reg_next =  8'h01;
             estado_sig = s9;
             load_rtc = 1'b1;
             load_ciclos = 1'b1;
@@ -402,6 +405,7 @@ always@*
         begin
             Load = 1'b1;
             Direc_reg_next = 8'h27;
+            WR_reg_next =  8'h01;
             estado_sig = s11;
             load_rtc = 1'b1;
             load_ciclos = 1'b1;
@@ -506,6 +510,7 @@ always@*
         begin
             Load = 1'b1;
             Direc_reg_next = 8'hF0;
+            WR_reg_next =  8'hff;
             estado_sig = s15;
             load_rtc = 1'b1;
             load_ciclos = 1'b1;

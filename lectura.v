@@ -35,27 +35,27 @@ reg leer, load_leer, lea_reg, load_rtc, rtc_flag, rtc_reg, load_ciclos;
 reg [7:0] Direc_reg;
 reg [7:0] Direc_reg_next = 8'hf1;
 //reg [7:0] RD_reg;
-reg [7:0] Seg_reg = 8'h00;
-reg [7:0] Min_reg = 8'h00;
-reg [7:0] Hor_reg = 8'h00;
-reg [7:0] Date_reg = 8'h00;
-reg [7:0] Mes_reg = 8'h00;
-reg [7:0] Year_reg = 8'h00;
-reg [7:0] Day_reg = 8'h00;
-reg [7:0] SegT_reg = 8'h00;
-reg [7:0] MinT_reg = 8'h00;
-reg [7:0] HorT_reg = 8'h00;
-reg [7:0] Seg_reg_next = 8'h00;
-reg [7:0] Min_reg_next = 8'h00;
-reg [7:0] Hor_reg_next = 8'h00;
-reg [7:0] Date_reg_next = 8'h00;
-reg [7:0] Mes_reg_next = 8'h00;
-reg [7:0] Year_reg_next = 8'h00;
-reg [7:0] Day_reg_next = 8'h00;
-reg [7:0] SegT_reg_next = 8'h00;
-reg [7:0] MinT_reg_next = 8'h00;
-reg [7:0] HorT_reg_next = 8'h00;
-reg [7:0] nada = 8'h00;
+reg [7:0] Seg_reg;
+reg [7:0] Min_reg;
+reg [7:0] Hor_reg;
+reg [7:0] Date_reg;
+reg [7:0] Mes_reg;
+reg [7:0] Year_reg;
+reg [7:0] Day_reg;
+reg [7:0] SegT_reg;
+reg [7:0] MinT_reg;
+reg [7:0] HorT_reg;
+reg [7:0] Seg_reg_next;
+reg [7:0] Min_reg_next;
+reg [7:0] Hor_reg_next;
+reg [7:0] Date_reg_next;
+reg [7:0] Mes_reg_next;
+reg [7:0] Year_reg_next;
+reg [7:0] Day_reg_next;
+reg [7:0] SegT_reg_next;
+reg [7:0] MinT_reg_next;
+reg [7:0] HorT_reg_next;
+reg [7:0] nada;
 
 //variable de carga
 reg Seg_load = 1'b0;
@@ -573,11 +573,11 @@ begin
             s11:
             begin
                 if (corra_timer)
-                    Direc_reg_next = ad42;
-                    estado_sig = s11;
+                    Direc_reg_next = 8'h42;
                     load_rtc = 1;
                     load_ciclos = 1;
                     ciclos = 2;
+                    estado_sig = s11;
                     if (contador == ciclos)
                     begin
                         ciclos = 0;
@@ -714,7 +714,6 @@ begin
             rtc_reg = rtc_flag;
         if (load_ciclos)
             ciclos_s = ciclos;
-        Direc_reg = Direc_reg_next;
 
     end
 

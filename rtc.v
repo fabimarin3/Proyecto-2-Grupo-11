@@ -26,7 +26,7 @@ module rtc(
     timer_seg_in, timer_min_in, timer_hor_in,
     fecha_dia_in, fecha_mes_in, fecha_year_in, fecha_ds_in,
     output [7:0] vga_seg, vga_min, vga_hor, vga_dia, vga_mes, vga_year, vga_sd,
-    vga_segt, vga_mint, vga_hort,
+    vga_segt, vga_mint, vga_hort, //segundos, minutos, horas,
     output a_d, cs, rd, wr, led_ring,
     inout [7:0] entradas_rtc
     //output [5:0] estado_inicializacion,
@@ -275,6 +275,8 @@ escribir_fecha escritura_fecha(
 //assign estado_wr_fecha = estado5;
 //assign estado_timer = estado3;
 //assign estado_lectura = estado6;
-
+//assign segundos = rd_seg;
+//assign minutos = rd_min;
+//assign horas = rd_hor;
 //assign ciclos = tiempo;
 endmodule
